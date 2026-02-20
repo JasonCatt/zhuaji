@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>抓鸡记分</title>
+<style>
+body{font-family:Arial;padding:20px;background:#f6f6f6}
+table{border-collapse:collapse;background:#fff;margin-top:10px}
+td,th{border:1px solid #ccc;padding:8px;text-align:center}
+input{width:60px;text-align:center}
+button{margin-top:10px;padding:6px 16px}
+select{padding:4px}
+</style>
+</head>
+<body>
+
+<h2>抓鸡记分（3输1赢）</h2>
+
+<div>
+玩家1：<input id="p1" value="玩家1">
+玩家2：<input id="p2" value="玩家2">
+玩家3：<input id="p3" value="玩家3">
+玩家4：<input id="p4" value="玩家4">
+</div>
+
+<table id="table">
+<tr>
+<th>局</th>
+<th id="h1">玩家1</th>
+<th id="h2">玩家2</th>
+<th id="h3">玩家3</th>
+<th id="h4">玩家4</th>
+<th>赢家</th>
+</tr>
+</table>
+
+<button onclick="addRow()">新增一局</button>
+
+<h3 id="total"></h3>
+
+<script>
+let round=0
+
+function updateHeader(){
+h1.innerText=p1.value
+h2.innerText=p2.value
+h3.innerText=p3.value
+h4.innerText=p4.value
+}
+p1.oninput=p2.oninput=p3.oninput=p4.oninput=updateHeader
+updateHeader()
+
+function addRow(){
+round++
+let tr=document.createElement("tr")
+tr.innerHTML=`
+<td>${round}</td>
+<td><input type="number" oninput="calc(this)"></td>
+<td><input type="number" oninput="calc(this)"></td>
+<td><input type="number" oninput="calc(this)"></td>
+<td><input type="number" oninput="calc(this)"></td>
+<td>
+<select onchange="calcSelect(this)">
+<option value="">选赢家</option>
+<option>1</option>
+<option>2</option>
+<option>3</option>
+<option>4</option>
+</select>
+</td>
+`
+table.appendChild(tr)
+}
+
+function calcSelect(sel){
+let tr=sel.parentNode.parentNode
+let inputs=tr.querySelectorAll("input")
+let win=Number(sel.value)-1
+let sum=0
+
+inputs.forEach((i,idx)=>{
+if(idx!==win){
+i.value=-Math.abs(i.value||0)
+sum+=Number(i.value)
+}
+})
+
+if(win>=0){
+inputs[win].value=Math.abs(sum)
+}
+calcTotal()
+}
+
+function calc(el){
+let tr=el.parentNode.parentNode
+let sel=tr.querySelector("select")
+if(sel.value) calcSelect(sel)
+}
+
+function calcTotal(){
+let totals=[0,0,0,0]
+document.querySelectorAll("#table tr").forEach((r,i)=>{
+if(i===0)return
+let inputs=r.querySelectorAll("input")
+inputs.forEach((inp,idx)=>{
+totals[idx]+=Number(inp.value||0)
+})
+})
+total.innerText="总分："+totals.join(" , ")
+}
+
+addRow()
+</script>
+
+</body>
+</html>
