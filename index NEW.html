@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+</head>
+<body>
+
+<h2>抓鸡临时同步记分</h2>
+<button onclick="add()">新增一局</button>
+<pre id="list"></pre>
+
+<script>
+const API="https://jsonblob.com/api/jsonBlob/123456789"
+
+async function add(){
+let a=prompt("输1")
+let b=prompt("输2")
+let c=prompt("输3")
+let w=prompt("赢家1-4")
+
+a=-Math.abs(a)
+b=-Math.abs(b)
+c=-Math.abs(c)
+
+let arr=[0,0,0,0]
+arr[0]=a
+arr[1]=b
+arr[2]=c
+arr[w-1]=Math.abs(a+b+c)
+
+let data=await fetch(API).then(r=>r.json()).catch(()=>[])
+data.push(arr)
+
+await fetch(API,{
+method:"PUT",
+headers:{'Content-Type':'application/json'},
+body:JSON.stringify(data)
+})
+}
+
+async function load(){
+let d=await fetch(API).then(r=>r.json()).catch(()=>[])
+list.innerText=JSON.stringify(d,null,2)
+}
+
+setInterval(load,1000)
+load()
+</script>
+
+</body>
+</html>
